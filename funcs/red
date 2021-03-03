@@ -1,0 +1,3 @@
+autoload withcolor
+
+withcolor red $1
