@@ -1,0 +1,3 @@
+if [[ -f .git/refs/stash ]]; then
+  echo " ↪" # ↪ 21aa
+fi
