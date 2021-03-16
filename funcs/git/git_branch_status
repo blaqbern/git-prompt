@@ -1,0 +1,29 @@
+autoload blue
+
+function compare_refs () {
+  if [[ -n $(git ls-remote --refs origin $2) ]]; then
+    local_branch_ref=$(git rev-parse $1 2> /dev/null)
+    remote_branch_ref=$(git rev-parse origin/$2 2> /dev/null)
+    merge_base_ref=$(git merge-base $local_branch_ref $remote_branch_ref 2> /dev/null)
+
+    if [[ $local_branch_ref != $remote_branch_ref ]]; then
+      if [[ $local_branch_ref = $merge_base_ref ]]; then
+        echo '▽'
+      elif [[ $remote_branch_ref = $merge_base_ref ]]; then
+        echo '△'
+      else
+        echo '△▽'
+      fi
+    fi
+  fi
+}
+
+branch_string=$(git status -v 2> /dev/null | grep "On branch")
+current_branch=${branch_string#On branch}
+
+git fetch origin main --dry-run 2> /dev/null
+
+current_v_origin_main=$(compare_refs $current_branch main)
+current_v_origin_current=$(compare_refs $current_branch $current_branch)
+
+echo $(magenta $current_v_origin_current) $(blue $current_v_origin_main)
