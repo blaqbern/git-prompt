@@ -4,19 +4,19 @@ indicator=◉ # ◉ 25c9
 
 git_status="$(git status 2> /dev/null)"
 
-status_icons=''
+status_icons=()
 if [[ $git_status =~ 'Changes to be committed:' ]]; then
-  status_icons="$(green $indicator)"
+  status_icons+=($(green $indicator))
 fi
 
 if [[ $git_status =~ 'Changes not staged for commit:' ]]; then
-  status_icons+="$(yellow $indicator)"
+  status_icons+=($(yellow $indicator))
 fi
 
 if [[ $git_status =~ 'Untracked files:' ]]; then
-  status_icons+="$(red $indicator)"
+  status_icons+=($(red $indicator))
 fi
 
-if [[ -n $status_icons ]]; then
-  echo " $status_icons"
+if [[ ${#status_icons[@]} -gt 0 ]]; then
+  echo $status_icons
 fi
