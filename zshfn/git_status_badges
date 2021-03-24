@@ -2,7 +2,7 @@ autoload green yellow red
 
 badge=◉ # U+25c9
 
-git_status=$(git status 2>/dev/null)
+git_status=$(git status 2> /dev/null)
 
 status_badges=()
 

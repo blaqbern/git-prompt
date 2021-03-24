@@ -1,6 +1,6 @@
 badge=↪ # U+21aa
 
-stash_info=$(git stash list 2>/dev/null)
+stash_info=$(git stash list 2> /dev/null)
 
 if [[ -n $stash_info ]]; then
   echo " $badge"
