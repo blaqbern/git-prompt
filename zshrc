@@ -1,10 +1,9 @@
-autoload -Uz vcs_info
+fpath=( ./zshfn "${fpath[@]}" )
 
 setopt PROMPT_SUBST
 
-zstyle ':vcs_info:*' enable git
-zstyle ':vcs_info:git:*' formats '%b'
-zstyle ':vcs_info:git:*' actionformats '%b (%a)'
+autoload -Uz vcs_init && vcs_init
+autoload -Uz cyan yellow
 
-PROMPT='%~ ⏾ '
+PROMPT="$(cyan %~) $(yellow ⏾) "
 RPROMPT='${vcs_info_msg_0_}'
