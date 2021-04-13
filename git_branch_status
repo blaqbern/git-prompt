@@ -39,9 +39,10 @@ git_branch_status () {
   main_branch=$(get_main_branch)
 
   current_vs_remote_main=$(compare_refs $current_branch $main_branch)
+  current_vs_remote_current=$(compare_refs $current_branch $current_branch)
 
   if [[ -a .git ]]; then
-    echo $(magenta $current_vs_remote_main)
+    echo "$(blue $current_vs_remote_current) $(magenta $current_vs_remote_main) "
   else
     echo $(yellow ∅)
   fi
