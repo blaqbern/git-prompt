@@ -1,0 +1,24 @@
+autoload green yellow red
+
+git_status_badges () {
+  badge=◉ # U+25c9
+  git_status=$(git status 2> /dev/null)
+
+  status_badges=()
+
+  if [[ $git_status =~ 'Changes to be committed:' ]]; then
+    status_badges+=( $(green $badge) )
+  fi
+
+  if [[ $git_status =~ 'Changes not staged for commit:' ]]; then
+    status_badges+=( $(yellow $badge) )
+  fi
+
+  if [[ $git_status =~ 'Untracked files' ]]; then
+    status_badges+=( $(red $badge) )
+  fi
+
+  if [[ -n $status_badges ]]; then
+    echo " $status_badges"
+  fi
+}
