@@ -1,0 +1,48 @@
+autoload blue magenta yellow
+
+compare_refs () {
+  ahead=ᐃ
+  behind=ᐁ
+
+  if [[ -n $(git ls-remote --refs origin $2 2> /dev/null) ]]; then
+    local_ref=$(git rev-parse $1 2> /dev/null)
+    remote_ref=$(git rev-parse origin/$2 2> /dev/null)
+
+    if [[ $local_ref != $remote_ref ]]; then
+      merge_base=$(git merge-base $local_ref $remote_ref 2> /dev/null)
+
+      if [[ $merge_base == $remote_ref ]]; then
+        echo $ahead
+      elif [[ $merge_base == $local_ref ]]; then
+        echo $behind
+      else
+        echo "$ahead$behind"
+      fi
+    fi
+  fi
+}
+
+get_main_branch () {
+  branches=$(git branch)
+
+  if [[ $branches =~ main ]]; then
+    echo 'main'
+  elif [[ $branches =~ master ]]; then
+    echo 'master'
+  fi
+}
+
+git_branch_status () {
+  current_raw=$(git status | grep "On branch ")
+  current_branch="${current_raw[(w)3]}"
+
+  main_branch=$(get_main_branch)
+
+  current_vs_remote_main=$(compare_refs $current_branch $main_branch)
+
+  if [[ -a .git ]]; then
+    echo $(magenta $current_vs_remote_main)
+  else
+    echo $(yellow ∅)
+  fi
+}
