@@ -1,0 +1,2 @@
+branch_str=$(git status | grep 'On branch' 2> /dev/null)
+echo "${branch_str[(w)3]}"

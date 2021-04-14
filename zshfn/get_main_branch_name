@@ -1,0 +1,9 @@
+branches=$(git branch 2> /dev/null)
+
+if [[ $branches =~ main ]]; then
+  echo main
+elif [[ $branches =~ master ]]; then
+  echo master
+elif [[ $branches =~ develop ]]; then
+  echo develop
+fi

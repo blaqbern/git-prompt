@@ -1,0 +1,33 @@
+current_dir=$0:a:h
+
+if [[ ${fpath[(ie)$current_dir/zshfn]} -gt ${#fpath} ]]; then
+  fpath=( $current_dir/zshfn ${fpath[@]} )
+fi
+
+autoload cyan yellow
+autoload get_current_branch_name
+
+build_prompt () {
+  source $current_dir/git_status_badges
+  source $current_dir/git_stash_badge
+  source $current_dir/git_branch_status
+
+  prompt_elements=( $(cyan %~) ⏾ ' ' )
+  if [[ -a .git ]]; then
+    right_prompt_elements=(
+      $(git_branch_status)
+      $(cyan $(get_current_branch_name))
+      $(git_status_badges)
+      $(git_stash_badge)
+    )
+  else
+    right_prompt_elements=( $(yellow ∅) )
+  fi
+
+  PROMPT=${prompt_elements[@]}
+  RPROMPT=${right_prompt_elements[@]}
+}
+
+precmd () {
+  build_prompt
+}

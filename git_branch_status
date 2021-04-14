@@ -1,0 +1,39 @@
+autoload blue magenta
+autoload get_current_branch_name get_main_branch_name
+
+ahead=ᐃ
+behind=ᐁ
+
+compare_refs () {
+  if [[ -n $(git ls-remote --refs origin $2 2> /dev/null) ]]; then
+    local_ref=$(git rev-parse $1 2> /dev/null)
+    remote_ref=$(git rev-parse origin/$2 2> /dev/null)
+
+    if [[ $remote_ref != $local_ref ]]; then
+      merge_base=$(git merge-base $local_ref $remote_ref 2> /dev/null)
+
+      if [[ $remote_ref == $merge_base ]]; then
+        echo $ahead
+      elif [[ $local_ref == $merge_base ]]; then
+        echo $behind
+      else
+        echo "$ahead$behind"
+      fi
+    fi
+  fi
+}
+
+git_branch_status () {
+  current_branch=$(get_current_branch_name)
+  main_branch=$(get_main_branch_name)
+
+  current_vs_origin_main=$(compare_refs $current_branch $main_branch)
+  current_vs_origin_current=$(compare_refs $current_branch $current_branch)
+
+  branch_statuses=(
+    $(magenta $current_vs_origin_current)
+    $(blue $current_vs_origin_main)
+  )
+
+  echo ${branch_statuses[@]}
+}

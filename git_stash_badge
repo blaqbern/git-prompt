@@ -1,0 +1,5 @@
+git_stash_badge () {
+  if [[ -n $(git stash list 2> /dev/null) ]]; then
+    echo ↪
+  fi
+}
