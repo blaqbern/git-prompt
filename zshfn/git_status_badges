@@ -1,0 +1,14 @@
+local badge=◉
+local status_badges=()
+
+local git_status=$(git status 2> /dev/null)
+
+local staged='Changes to be committed:'
+local unstaged='Changes not staged for commit:'
+local untracked='Untracked files:'
+
+[[ $git_status =~ $staged ]] && status_badges=( $(green $badge) )
+[[ $git_status =~ $unstaged ]] && status_badges+=( $(yellow $badge) )
+[[ $git_status =~ $untracked ]] && status_badges+=( $(red $badge) )
+
+[[ ${#status_badges} -gt 0 ]] && echo $status_badges

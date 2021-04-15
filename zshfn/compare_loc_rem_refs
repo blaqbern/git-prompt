@@ -1,0 +1,19 @@
+local ahead=ᐃ
+local behind=ᐁ
+
+if [[ -a .git/refs/remotes/origin/$2 ]]; then
+  local loc_ref=$(cat .git/refs/heads/$1)
+  local rem_ref=$(cat .git/refs/remotes/origin/$2)
+
+  if [[ $loc_ref != $rem_ref ]]; then
+    local merge_base=$(git merge-base $loc_ref $rem_ref 2> /dev/null)
+
+    if [[ $rem_ref == $merge_base ]]; then
+      echo $ahead
+    elif [[ $loc_ref == $merge_base ]]; then
+      echo $behind
+    else
+      echo $ahead$behind
+    fi
+  fi
+fi

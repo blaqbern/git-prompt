@@ -1,0 +1,45 @@
+if [[ $fpath[(ie)$0:a:h/zshfn] -gt ${#fpath} ]]; then
+  fpath=( $0:a:h/zshfn ${fpath[@]} )
+fi
+
+autoload $fpath[1]/*(:t)
+
+build_right_prompt () {
+  local components=()
+
+  if [[ -a .git ]]; then
+    local current_branch=${"$(cat .git/HEAD)":t}
+    local main_branch=$(get_origin_main_branch_name)
+
+    local current_vs_origin_main=$(compare_loc_rem_refs $current_branch $main_branch)
+    local current_vs_origin_current=$(compare_loc_rem_refs $current_branch $current_branch)
+
+    if [[ -n $current_vs_origin_current ]]; then
+      components=( $(magenta $current_vs_origin_current) )
+    fi
+    if [[ -n $current_vs_origin_main ]]; then
+      components+=( $(blue $current_vs_origin_main) )
+    fi
+    components+=(
+      $(cyan $current_branch)
+      $(git_status_badges)
+      $(git_stash_badge)
+    )
+  else
+    components=( $(yellow ∅) )
+  fi
+
+  echo $components
+}
+
+build_prompt () {
+  local prompt_components=( $(cyan %~) '⏾ ' )
+  local right_prompt_components=$(build_right_prompt)
+
+  PROMPT=${prompt_components[@]}
+  RPROMPT=${right_prompt_components[@]}
+}
+
+precmd () {
+  build_prompt
+}
