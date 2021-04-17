@@ -1,0 +1,65 @@
+if [[ ${fpath[(ie)$0:a:h/zshfn]} -gt ${#fpath} ]]; then
+  fpath=( $0:a:h/zshfn $fpath[@] )
+fi
+
+autoload $0:a:h/zshfn/*(:t)
+
+precmd () {
+  build_prompt
+}
+
+build_prompt () {
+  local prompt_components=( $(cyan %~) ⏾ '' )
+  local right_prompt_components=$(build_right_prompt)
+
+  PROMPT=${prompt_components[@]}
+  RPROMPT=${right_prompt_components[@]}
+}
+
+build_right_prompt () {
+  if [[ -a .git ]]; then
+    local components=()
+    local current_branch=$(get_current_branch_name)
+    local main_branch=$(get_main_branch_name)
+
+    local status_badges=$(git_status_badges)
+    local stash_badge=$(git_stash_badge)
+
+    local compare_origin_main=$(compare_origin_ref $main_branch)
+    local compare_origin_current=$(compare_origin_ref $current_branch)
+
+    [[ -n $compare_origin_current ]] && components+=($(magenta $compare_origin_current))
+    [[ -n $compare_origin_main ]] && components+=($(blue $compare_origin_main))
+    components+=( $(cyan $current_branch) )
+    [[ -n $status_badges ]] && components+=($status_badges)
+    [[ -n $stash_badge ]] && components+=($stash_badge)
+
+    echo $components
+  else
+    echo ×
+  fi
+}
+
+compare_origin_ref () {
+  if [[ -a .git/refs/remotes/origin/$1 ]]; then
+    local ahead=ᐃ
+    local behind=ᐁ
+
+    local current_ref=$(cat .git/refs/heads/$(get_current_branch_name))
+    local origin_ref=$(cat .git/refs/remotes/origin/$1)
+
+    if [[ $current_ref != $origin_ref ]]; then
+      local merge_base=$(git merge-base $current_ref $origin_ref 2> /dev/null)
+
+      if [[ $origin_ref == $merge_base ]]; then
+        echo $ahead
+      elif [[ $current_ref == $merge_base ]]; then
+        echo $behind
+      else
+        echo $ahead$behind
+      fi
+    fi
+  else
+    echo ∅
+  fi
+}

@@ -1,0 +1,9 @@
+local branch_name
+
+for branch_name in .git/refs/remotes/origin/*(:t); do
+  [[ $branch_name == 'main' ]] && break
+  [[ $branch_name == 'master' ]] && break
+  [[ $branch_name == 'develop' ]] && break
+done
+
+echo $branch_name
